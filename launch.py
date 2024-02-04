@@ -7,8 +7,10 @@ import time
 import requests
 from dotenv import load_dotenv
 
-# runpod doesn't manage I/O greater than 2MB.
-MAX_FILE_SIZE_BYTES = 2 * 1024 * 1024  # 2MB
+#Payloads are limited to:
+# run 10 MB.
+# runsync: 20 MB.
+MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024 # run is being used so, go for 10MB
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
