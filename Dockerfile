@@ -1,4 +1,4 @@
-FROM francescooteri/af2_msa:latest
+FROM francescooteri/af2_msa:dev
 
 ENV RUNPOD_DEBUG_LEVEL=DEBUG
 WORKDIR /app
