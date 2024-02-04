@@ -40,6 +40,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          file: ./docker/Dockerfile
+          file: Dockerfile
           push: true
           tags: ${{ steps.setup_tag.outputs.tag }}
