@@ -1,10 +1,20 @@
 import os
 from pathlib import Path
-def create_input_file(event,job_dir:Path)-> Path:
+
+import cloudflare_io
+
+def create_input_file(content:str,job_dir:Path)-> Path:
     # Save event.msa to WORKDIR/msa.fasta
     msa_file_path = os.path.join(job_dir, "msa.fasta")
     with open(msa_file_path, "w") as file:
-        file.write(event["input"]["msa"])
+        file.write(content)
+    return Path(msa_file_path)
+
+
+def download_file_from_r2(fn_name:str,job_dir:Path)-> Path:
+    bucket = os.environ['BUCKET_NAME']
+    msa_file_path = os.path.join(job_dir, "msa.fasta")
+    cloudflare_io.download_file_from_r2(bucket,fn_name ,msa_file_path)
     return Path(msa_file_path)
 
 
