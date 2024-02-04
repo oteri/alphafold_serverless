@@ -1,0 +1,3 @@
+[submodule "alphafold_MSA"]
+	path = alphafold_MSA
+	url = git@github.com:oteri/alphafold_MSA.git
