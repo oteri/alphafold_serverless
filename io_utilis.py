@@ -1,21 +1,24 @@
 import os
 from pathlib import Path
+import uuid
 
-import cloudflare_io
+from cloudflare_io import CloudStorageClient
 
 def create_input_file(content:str,job_dir:Path)-> Path:
-    # Save event.msa to WORKDIR/msa.fasta
+    """Save the content of the input to WORKDIR/msa.fasta
+
+    Args:
+        content (str): Text of the MSA
+        job_dir (Path): Directory of the running job
+
+    Returns:
+        Path: Full path of the saved file.
+    """
     msa_file_path = os.path.join(job_dir, "msa.fasta")
     with open(msa_file_path, "w") as file:
         file.write(content)
     return Path(msa_file_path)
 
-
-def download_file_from_r2(fn_name:str,job_dir:Path)-> Path:
-    bucket = os.environ['BUCKET_NAME']
-    msa_file_path = os.path.join(job_dir, "msa.fasta")
-    cloudflare_io.download_file_from_r2(bucket,fn_name ,msa_file_path)
-    return Path(msa_file_path)
 
 
 def read_output_content(output_file_path:Path)->str:
@@ -30,3 +33,38 @@ def read_output_content(output_file_path:Path)->str:
     with open(output_file_path, "r") as file:
         output_content = file.read()
         return output_content
+
+
+def download_obj_from_r2(obj_name:str,msa_file_path:Path)-> Path:
+    """Downloads some object from a R2 bucket to disk.
+
+    Args:
+        fn_name (str): name of the object
+        msa_file_path (Path): _description_
+
+    Returns:
+        Path: The full path the object hs been dumped to.
+    """
+    bucket = os.environ['BUCKET_NAME']
+    CloudStorageClient().download_file_from_r2(bucket,obj_name ,msa_file_path)
+    return Path(msa_file_path)
+
+
+
+def upload_file_to_r2(file_name:str, object_key:str=None)-> str:
+    """Upload a file to an object on a R2 bucket
+
+    Args:
+        file_name (str): Path of the file.
+        object_key (str): The object key (i.e., file name) under which the file will be stored in the bucket.
+                                If None, a unique name is generated.
+
+    Returns:
+        str: the path of the object
+    """
+    if object_key is None:
+        file_extension = Path(file_name).suffix
+        object_key = f"{uuid.uuid4()}{file_extension}"
+    return CloudStorageClient() \
+    .upload_file(local_file_path=file_name,
+                       object_key= object_key)
