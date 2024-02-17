@@ -4,7 +4,7 @@ import tempfile
 from pathlib import Path
 from absl import logging
 import runpod
-from prediction import run_prediction_test as run_prediction
+from prediction import run_prediction
 import io_utilis
 
 # WORKDIR and PARAM_DIR are usually set by runpod at running time
