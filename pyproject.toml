@@ -1,11 +1,11 @@
-[tool.ruff]
-# Specify the paths you want Ruff to ignore
-exclude = ["build/", "dist/"]
+[project]
+requires-python = ">=3.10"
 
-# Specify individual checks to enable
-# (useful if you have used --select or --extend-select)
-extend-select = ["E1", "W2"]
+[tool.ruff.lint]
+extend-select = [
+  "UP",  # pyupgrade
+  "D",   # pydocstyle
+]
 
-# Specify individual checks to disable
-# (useful if you have used --ignore or --extend-ignore)
-extend-ignore = ["E203"]
+[tool.ruff.lint.pydocstyle]
+convention = "google"
