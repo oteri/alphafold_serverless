@@ -1,12 +1,13 @@
+"""Handles high level I/O operations."""
 import os
-from pathlib import Path
+from typing import Union
 import uuid
-
 from cloudflare_io import CloudStorageClient
+from pathlib import Path
 
 
 def create_input_file(content: str, job_dir: Path) -> Path:
-    """Save the content of the input to WORKDIR/msa.fasta
+    """Save the content of the input to WORKDIR/msa.fasta .
 
     Args:
         content (str): Text of the MSA
@@ -39,19 +40,19 @@ def download_obj_from_r2(obj_name: str, msa_file_path: Path) -> Path:
     """Downloads some object from a R2 bucket to disk.
 
     Args:
-        fn_name (str): name of the object
+        obj_name (str): name of the object
         msa_file_path (Path): _description_
 
     Returns:
         Path: The full path the object hs been dumped to.
     """
-    bucket = os.environ["BUCKET_NAME"]
-    CloudStorageClient().download_file(bucket, obj_name, msa_file_path)
+    client = CloudStorageClient()
+    client.download_file(obj_name, msa_file_path)
     return Path(msa_file_path)
 
 
-def upload_file_to_r2(file_name: str, object_key: str = None) -> str:
-    """Upload a file to an object on a R2 bucket
+def upload_file_to_r2(file_name: str, object_key: Union[str, None] = None) -> str:
+    """Upload a file to an object on a R2 bucket.
 
     Args:
         file_name (str): Path of the file.

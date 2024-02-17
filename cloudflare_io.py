@@ -1,3 +1,4 @@
+"""Manages the low level interfaces with cloudflare."""
 import os
 from pathlib import Path
 from typing import Union
@@ -11,8 +12,7 @@ load_dotenv(verbose=True)
 
 
 class CloudStorageClient:
-    """
-    A client for interacting with Cloudflare R2 cloud storage.
+    """A client for interacting with Cloudflare R2 cloud storage.
 
     This class encapsulates methods to upload and download files to and from
     Cloudflare R2 buckets. It can be initialized with specific credentials
@@ -30,18 +30,29 @@ class CloudStorageClient:
 
     def __init__(
         self,
-        access_key: str = None,
-        secret_key: str = None,
-        endpoint_url: str = None,
-        bucket_name: str = None,
+        access_key: Union[str, None] = None,
+        secret_key: Union[str, None] = None,
+        endpoint_url: Union[str, None] = None,
+        bucket_name: Union[str, None] = None,
     ):
+        """Initialize CloudStorageClient.
+
+        Args:
+            access_key (Union[str, None], optional): Access key. Defaults to None.
+            secret_key (Union[str, None], optional): secret key. Defaults to None.
+            endpoint_url (Union[str, None], optional): endpoint url. Defaults to None.
+            bucket_name (Union[str, None], optional): bucket name. Defaults to None.
+
+        Raises:
+            NoCredentialsError: _description_
+        """
         self.access_key = access_key or os.getenv("BUCKET_ACCESS_KEY_ID")
         self.secret_key = secret_key or os.getenv("BUCKET_SECRET_ACCESS_KEY")
         self.endpoint_url = endpoint_url or os.getenv("BUCKET_ENDPOINT_URL")
         self.bucket_name = bucket_name or os.environ["BUCKET_NAME"]
 
         if not self.access_key or not self.secret_key or not self.endpoint_url:
-            raise NoCredentialsError("R2 credentials are missing or incomplete")
+            raise NoCredentialsError()
 
         self.session = boto3.session.Session()
         self.s3 = self.session.client(
@@ -54,8 +65,7 @@ class CloudStorageClient:
     def download_file(
         self, object_key: str, destination_path: Union[str, Path]
     ) -> None:
-        """
-        Downloads a file from a Cloudflare R2 bucket.
+        """Downloads a file from a Cloudflare R2 bucket.
 
         Args:
             object_key (str): The object key (i.e., file name) in the bucket.
@@ -65,10 +75,9 @@ class CloudStorageClient:
         print(f"File {object_key} downloaded successfully to {destination_path}")
 
     def upload_file(
-        self, local_file_path: Union[str, Path], object_key: str = None
+        self, local_file_path: Union[str, Path], object_key: Union[str, None] = None
     ) -> str:
-        """
-        Uploads a file to a Cloudflare R2 bucket.
+        """Uploads a file to a Cloudflare R2 bucket.
 
         Args:
             local_file_path (Union[str, Path]): The local file system path of the file to be uploaded.

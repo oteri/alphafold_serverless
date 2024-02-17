@@ -1,9 +1,4 @@
 # this is optional, use `pre-commit autoupdate` to get the latest rev!
-
-# [tool.isort]
-# profile = "black"
-# add_imports = "from __future__ import annotations"
-
 repos:
 - repo: local
   hooks:
@@ -22,10 +17,10 @@ repos:
     -   id: trailing-whitespace
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
+  # Ruff version.
   rev: v0.2.1
   hooks:
     # Run the linter.
     - id: ruff
-      args: [ --fix ]
     # Run the formatter.
     - id: ruff-format
