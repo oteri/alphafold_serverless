@@ -47,7 +47,7 @@ payload = {
 headers = {
     "accept": "application/json",
     "content-type": "application/json",
-    "authorization": f"Bearer {os.environ.get('API_TOKEN')}",
+    "authorization": f"Bearer {os.environ.get('RUNPOD_API_TOKEN')}",
 }
 
 logger.info("Submitting job")
