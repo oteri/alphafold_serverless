@@ -2,7 +2,6 @@
 set -x
 
 export PYTHONUNBUFFERED=1
-export PARAM_DIR=/models/params
 export LD_LIBRARY_PATH=/app/env/lib/:${LD_LIBRARY_PATH}
 
 cd /app/

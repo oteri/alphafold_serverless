@@ -6,7 +6,8 @@ RUN apt-get update && apt-get install -y wget    \
     && apt-get clean
 
 ENV RUNPOD_DEBUG_LEVEL=DEBUG
-WORKDIR /models/params
+ENV PARAM_DIR=/models
+WORKDIR $PARAM_DIR/params
 RUN wget -qO- https://storage.googleapis.com/alphafold/alphafold_params_2022-12-06.tar| tar xf - --no-same-owner
 
 WORKDIR /app
