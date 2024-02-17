@@ -17,7 +17,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Load environment variables from .env file
-load_dotenv()
+load_dotenv(verbose=True)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--endpointId", help="Endpoint ID for API request")
@@ -60,10 +60,11 @@ if response.status_code == 200:
     url = f"https://api.runpod.ai/v2/{args.endpointId}/status/{job_id}"
     headers = {
         "accept": "application/json",
-        "authorization": f"Bearer {os.environ.get('API_TOKEN')}",
+        "authorization": f"Bearer {os.environ.get('RUNPOD_API_TOKEN')}",
     }
     while 1:
         response = requests.get(url, headers=headers)
+        response.raise_for_status()
         response_dict = json.loads(response.text)
 
         status = response_dict["status"]
