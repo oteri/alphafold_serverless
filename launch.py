@@ -7,10 +7,10 @@ import time
 import requests
 from dotenv import load_dotenv
 
-#Payloads are limited to:
+# Payloads are limited to:
 # run 10 MB.
 # runsync: 20 MB.
-MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024 # run is being used so, go for 10MB
+MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024  # run is being used so, go for 10MB
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -35,7 +35,7 @@ if msa_file_size > MAX_FILE_SIZE_BYTES:
 
 # Read the content of the MSA file
 msa_content = ""
-with open(args.msa, "r") as file:
+with open(args.msa) as file:
     msa_content = file.read()
 
 payload = {

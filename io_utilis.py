@@ -4,7 +4,8 @@ import uuid
 
 from cloudflare_io import CloudStorageClient
 
-def create_input_file(content:str,job_dir:Path)-> Path:
+
+def create_input_file(content: str, job_dir: Path) -> Path:
     """Save the content of the input to WORKDIR/msa.fasta
 
     Args:
@@ -20,8 +21,7 @@ def create_input_file(content:str,job_dir:Path)-> Path:
     return Path(msa_file_path)
 
 
-
-def read_output_content(output_file_path:Path)->str:
+def read_output_content(output_file_path: Path) -> str:
     """Read the output file and return it as a string.
 
     Args:
@@ -30,12 +30,12 @@ def read_output_content(output_file_path:Path)->str:
     Returns:
         str: the content of the file.
     """
-    with open(output_file_path, "r") as file:
+    with open(output_file_path) as file:
         output_content = file.read()
         return output_content
 
 
-def download_obj_from_r2(obj_name:str,msa_file_path:Path)-> Path:
+def download_obj_from_r2(obj_name: str, msa_file_path: Path) -> Path:
     """Downloads some object from a R2 bucket to disk.
 
     Args:
@@ -45,13 +45,12 @@ def download_obj_from_r2(obj_name:str,msa_file_path:Path)-> Path:
     Returns:
         Path: The full path the object hs been dumped to.
     """
-    bucket = os.environ['BUCKET_NAME']
-    CloudStorageClient().download_file(bucket,obj_name ,msa_file_path)
+    bucket = os.environ["BUCKET_NAME"]
+    CloudStorageClient().download_file(bucket, obj_name, msa_file_path)
     return Path(msa_file_path)
 
 
-
-def upload_file_to_r2(file_name:str, object_key:str=None)-> str:
+def upload_file_to_r2(file_name: str, object_key: str = None) -> str:
     """Upload a file to an object on a R2 bucket
 
     Args:
@@ -65,6 +64,6 @@ def upload_file_to_r2(file_name:str, object_key:str=None)-> str:
     if object_key is None:
         file_extension = Path(file_name).suffix
         object_key = f"{uuid.uuid4()}{file_extension}"
-    return CloudStorageClient() \
-    .upload_file(local_file_path=file_name,
-                       object_key= object_key)
+    return CloudStorageClient().upload_file(
+        local_file_path=file_name, object_key=object_key
+    )

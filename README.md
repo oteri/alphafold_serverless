@@ -3,9 +3,9 @@ Running Alphafold_MSA over the serverless GPU hosted on runpod
 
 To run a job
 
-Copy env.sample file to .env.sample 
+Copy env.sample file to .env.sample
 
-Generate an API_KEY and fill the correspoonding field in .env.sample 
+Generate an API_KEY and fill the correspoonding field in .env.sample
 
 
 On runpod, create an endpoint.

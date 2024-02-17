@@ -129,7 +129,7 @@ def run_prediction_test(
 
     try:
         logging.warning(f"Writing: {o_dir / 'ranked_0.pdb'}")
-        with open(o_dir / 'ranked_0.pdb', "wt") as f_out:
+        with open(o_dir / "ranked_0.pdb", "w") as f_out:
             f_out.write("ATOM test1")
-    except IOError as e:
+    except OSError as e:
         logging.error(f"Error writing to file: {e}")

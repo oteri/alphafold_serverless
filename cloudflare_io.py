@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv(verbose=True)
+
+
 class CloudStorageClient:
     """
     A client for interacting with Cloudflare R2 cloud storage.
@@ -26,24 +28,32 @@ class CloudStorageClient:
         NoCredentialsError: If R2 credentials are missing or invalid.
     """
 
-    def __init__(self, access_key: str = None, secret_key: str = None, endpoint_url: str = None, bucket_name: str = None):
-        self.access_key = access_key or os.getenv('BUCKET_ACCESS_KEY_ID')
-        self.secret_key = secret_key or os.getenv('BUCKET_SECRET_ACCESS_KEY')
-        self.endpoint_url = endpoint_url or os.getenv('BUCKET_ENDPOINT_URL')
-        self.bucket_name = bucket_name  or os.environ['BUCKET_NAME']
+    def __init__(
+        self,
+        access_key: str = None,
+        secret_key: str = None,
+        endpoint_url: str = None,
+        bucket_name: str = None,
+    ):
+        self.access_key = access_key or os.getenv("BUCKET_ACCESS_KEY_ID")
+        self.secret_key = secret_key or os.getenv("BUCKET_SECRET_ACCESS_KEY")
+        self.endpoint_url = endpoint_url or os.getenv("BUCKET_ENDPOINT_URL")
+        self.bucket_name = bucket_name or os.environ["BUCKET_NAME"]
 
         if not self.access_key or not self.secret_key or not self.endpoint_url:
             raise NoCredentialsError("R2 credentials are missing or incomplete")
 
         self.session = boto3.session.Session()
         self.s3 = self.session.client(
-            service_name='s3',
+            service_name="s3",
             endpoint_url=self.endpoint_url,
             aws_access_key_id=self.access_key,
             aws_secret_access_key=self.secret_key,
         )
 
-    def download_file(self,  object_key: str, destination_path: Union[str, Path]) -> None:
+    def download_file(
+        self, object_key: str, destination_path: Union[str, Path]
+    ) -> None:
         """
         Downloads a file from a Cloudflare R2 bucket.
 
@@ -54,7 +64,9 @@ class CloudStorageClient:
         self.s3.download_file(self.bucket_name, object_key, str(destination_path))
         print(f"File {object_key} downloaded successfully to {destination_path}")
 
-    def upload_file(self, local_file_path: Union[str, Path],  object_key: str=None) -> str:
+    def upload_file(
+        self, local_file_path: Union[str, Path], object_key: str = None
+    ) -> str:
         """
         Uploads a file to a Cloudflare R2 bucket.
 
@@ -69,18 +81,19 @@ class CloudStorageClient:
         if object_key is None:
             object_key = str(uuid.uuid1())
         self.s3.upload_file(str(local_file_path), self.bucket_name, object_key)
-        print(f"File {local_file_path} uploaded successfully as {object_key} in {self.bucket_name} bucket")
+        print(
+            f"File {local_file_path} uploaded successfully as {object_key} in {self.bucket_name} bucket"
+        )
         return object_key
 
 
 # Example usage
-if __name__ == '__main__':
-    file_extension = '.txt'
+if __name__ == "__main__":
+    file_extension = ".txt"
     object_name = f"{uuid.uuid4()}{file_extension}"
     storage_client = CloudStorageClient()
     try:
         object_key = storage_client.upload_file("README.md")
-        storage_client.download_file(object_key=object_key,destination_path=object_key)
+        storage_client.download_file(object_key=object_key, destination_path=object_key)
     except NoCredentialsError as e:
         print(f"Error: {e}")
-
