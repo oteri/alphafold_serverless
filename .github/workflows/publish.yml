@@ -31,8 +31,10 @@ jobs:
         run: |
           if [[ $GITHUB_REF == 'refs/heads/dev' ]]; then
             echo "::set-output name=tag::francescooteri/af2_msa_serverless:dev"
-          else
+          elif [[ $GITHUB_REF == 'refs/heads/master' ]]; then
             echo "::set-output name=tag::francescooteri/af2_msa_serverless:latest"
+          else
+            echo "::set-output name=tag::francescooteri/af2_msa_serverless:test"
           fi
 
       # Login to Docker Hub
