@@ -46,7 +46,7 @@ def download_obj_from_r2(obj_name:str,msa_file_path:Path)-> Path:
         Path: The full path the object hs been dumped to.
     """
     bucket = os.environ['BUCKET_NAME']
-    CloudStorageClient().download_file_from_r2(bucket,obj_name ,msa_file_path)
+    CloudStorageClient().download_file(bucket,obj_name ,msa_file_path)
     return Path(msa_file_path)
 
 
