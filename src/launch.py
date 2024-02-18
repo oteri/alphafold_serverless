@@ -4,10 +4,12 @@ import json
 import logging
 import os
 import time
+from cloudpathlib import S3Path  # type: ignore
 
-import requests
-from dotenv import load_dotenv
-from io_utilis import download_obj_from_r2
+import requests  # type: ignore
+from dotenv import load_dotenv  # type: ignore
+
+from cloudflare_io import CloudStorageClient
 
 # Payloads are limited to:
 # run 10 MB.
@@ -26,7 +28,13 @@ load_dotenv(verbose=True)
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--endpointId", type=str, help="Endpoint ID for API request")
-parser.add_argument("--msa", type=str, default="msa.fasta", help="Path to the MSA file")
+parser.add_argument(
+    "--msa",
+    type=str,
+    default="msa.fasta",
+    help="Path to the MSA file. If the file is on a bucket, the results will be on the same bucket",
+)
+
 parser.add_argument(
     "--output",
     type=str,
@@ -37,7 +45,7 @@ args = parser.parse_args()
 url = f"https://api.runpod.ai/v2/{args.endpointId}/run"
 
 # Read the content of the MSA file
-is_bucket = args.msa.startswith("s3://")
+is_bucket = args.bucket.startswith("s3://")
 if is_bucket:
     input = {"s3": args.msa}
 else:
@@ -45,7 +53,9 @@ else:
     msa_file_size = os.path.getsize(args.msa)
     if msa_file_size > MAX_FILE_SIZE_BYTES:
         logger.error(
-            f"Error: MSA file size exceeds the maximum allowed size of {MAX_FILE_SIZE_MB}MB."
+            f"""Error: MSA file size exceeds the maximum allowed size of {MAX_FILE_SIZE_MB}MB.
+            Think about uploading your file to a bucket.
+            """
         )
         exit(1)
 
@@ -91,8 +101,10 @@ while 1:
 
         if is_bucket:
             fn_names = response_dict["output"].split(",")
+            bucket_name = S3Path(cloud_path=args.msa).bucket
+            client = CloudStorageClient(bucket_name=bucket_name)
             for obj_name in fn_names:
-                download_obj_from_r2(obj_name=obj_name, fn_output=obj_name)
+                client.download_file(object_key=obj_name, destination_path=obj_name)
         else:
             output_file = f"{job_id}.pdb" if args.output is None else args.output
             response_output_dict = json.loads(response_dict["output"])

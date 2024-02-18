@@ -17,7 +17,8 @@ convention = "google"
 
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
+files = "src/**/*.py"
 strict_optional = true
 warn_redundant_casts = true
 warn_unused_ignores = true

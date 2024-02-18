@@ -2,8 +2,8 @@
 import os
 import random
 import sys
-from typing import Any, Dict
-import numpy as np
+from typing import Any
+import numpy as np  # type: ignore
 
 import jax.numpy as jnp  # type: ignore
 from absl import logging  # type: ignore
@@ -16,11 +16,11 @@ from alphafold.relax import relax  # type: ignore
 RELAX_MAX_ITERATIONS = 0
 RELAX_ENERGY_TOLERANCE = 2.39
 RELAX_STIFFNESS = 10.0
-RELAX_EXCLUDE_RESIDUES = []
+RELAX_EXCLUDE_RESIDUES = []  # type: ignore
 RELAX_MAX_OUTER_ITERATIONS = 3
 
 
-def _jnp_to_np(output: Dict[str, Any]) -> Dict[str, Any]:
+def _jnp_to_np(output: dict[str, Any]) -> dict[str, Any]:
     """Recursively changes jax arrays to numpy arrays."""
     for k, v in output.items():
         if isinstance(v, dict):

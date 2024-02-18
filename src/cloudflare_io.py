@@ -3,8 +3,8 @@ import os
 from pathlib import Path
 from typing import Union
 import uuid
-from cloudpathlib import S3Client, S3Path
-from dotenv import load_dotenv
+from cloudpathlib import S3Client, S3Path  # type: ignore
+from dotenv import load_dotenv  # type: ignore
 
 # Load environment variables
 load_dotenv(verbose=True)

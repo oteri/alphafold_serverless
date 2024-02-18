@@ -3,10 +3,13 @@ import json
 import os
 import tempfile
 from pathlib import Path
+
+from cloudpathlib import S3Path  # type: ignore
 from absl import logging  # type: ignore
 import runpod  # type: ignore
+from cloudflare_io import CloudStorageClient
 from prediction import run_prediction
-import io_utilis
+import io_utils
 
 # WORKDIR and PARAM_DIR are usually set by runpod at running time
 WORKDIR = os.environ.get("WORKDIR", "/data/")
@@ -25,13 +28,16 @@ def handler(event):
     logging.debug(f"job_dir:{job_dir}")
     event_input = event["input"]
     msa_file_path = None
+    client = None
     if "msa" in event_input:
         content = event_input["msa"]
-        msa_file_path = io_utilis.create_input_file(content=content, job_dir=job_dir)
+        msa_file_path = io_utils.create_input_file(content=content, job_dir=job_dir)
     elif "s3" in event_input:
-        s3_input = event_input["s3"]
+        msa_input = event_input["s3"]
         msa_file_path = job_dir / "msa.fasta"
-        io_utilis.download_obj_from_r2(obj_name=s3_input, fn_output=msa_file_path)
+        bucket_name = S3Path(cloud_path=msa_input).bucket
+        client = CloudStorageClient(bucket_name=bucket_name)
+        client.download_file(obj_name=msa_input, fn_output=msa_file_path)
     else:
         raise ValueError(
             "You must supply either the content of a MSA (max 20MB) or the S3 path of the file."
@@ -48,12 +54,12 @@ def handler(event):
         fns = []
         for i, file in enumerate(ranked_files.glob("ranked_*.pdb")):
             fn = f"{job_id}_{i}.pdb"
-            io_utilis.upload_file_to_r2(file_name=str(file), object_key=fn)
+            client.upload_file(local_file_path=str(file), object_key=fn)
             fns.append(fn)
         return json.dumps({"structure": ",".join(fns)})
     else:
         output_file_path = Path(job_dir) / "msa" / "ranked_0.pdb"
-        output_content = io_utilis.read_output_content(
+        output_content = io_utils.read_output_content(
             output_file_path=str(output_file_path)
         )
         return json.dumps({"structure": output_content})
