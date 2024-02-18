@@ -45,7 +45,7 @@ args = parser.parse_args()
 url = f"https://api.runpod.ai/v2/{args.endpointId}/run"
 
 # Read the content of the MSA file
-is_bucket = args.bucket.startswith("s3://")
+is_bucket = args.msa.startswith("s3://")
 if is_bucket:
     input = {"s3": args.msa}
 else:
