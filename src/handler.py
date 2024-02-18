@@ -1,9 +1,10 @@
+"""Main module invoked by runpod platform."""
 import json
 import os
 import tempfile
 from pathlib import Path
-from absl import logging
-import runpod
+from absl import logging  # type: ignore
+import runpod  # type: ignore
 from prediction import run_prediction
 import io_utilis
 
@@ -18,6 +19,7 @@ logging.debug(f"PARAM_DIR:{PARAM_DIR}")
 
 
 def handler(event):
+    """Function invoked by runpod."""
     job_id = event["id"]
     job_dir = Path(tempfile.mkdtemp(prefix=job_id, dir=Path(WORKDIR)))
     logging.debug(f"job_dir:{job_dir}")
@@ -29,7 +31,7 @@ def handler(event):
     elif "s3" in event_input:
         s3_input = event_input["s3"]
         msa_file_path = job_dir / "msa.fasta"
-        io_utilis.download_obj_from_r2(obj_name=s3_input, msa_file_path=msa_file_path)
+        io_utilis.download_obj_from_r2(obj_name=s3_input, fn_output=msa_file_path)
     else:
         raise ValueError(
             "You must supply either the content of a MSA (max 20MB) or the S3 path of the file."

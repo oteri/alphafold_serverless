@@ -1,16 +1,16 @@
+"""Performs the prediction task."""
 import os
-from pathlib import Path
 import random
 import sys
 from typing import Any, Dict
 import numpy as np
 
-import jax.numpy as jnp
-from absl import logging
-from alphafold.data import pipeline, pipeline_multimer
-from alphafold.model import config, data, model
-from alphafold.predict_structure import ModelsToRelax, predict_structure
-from alphafold.relax import relax
+import jax.numpy as jnp  # type: ignore
+from absl import logging  # type: ignore
+from alphafold.data import pipeline, pipeline_multimer  # type: ignore
+from alphafold.model import config, data, model  # type: ignore
+from alphafold.predict_structure import ModelsToRelax, predict_structure  # type: ignore
+from alphafold.relax import relax  # type: ignore
 
 
 RELAX_MAX_ITERATIONS = 0
@@ -39,8 +39,21 @@ def run_prediction(
     model_preset: str = "monomer",
     benchmark: bool = False,
     use_gpu_relax: bool = True,
-    random_seed: int = None,
+    random_seed: int = 1,
 ):
+    """Runs the prediction.
+
+    Args:
+        precomputed_msa (str): name of the file with the MSA.
+        data_dir (str): Directory with the weights.
+        output_dir (str): Directory the output will be saved to.
+        num_multimer_predictions_per_model (int, optional): How many multimer predictions must be carried on for each model. Defaults to 5.
+        models_to_relax (int, optional): What model to relax. Defaults to ModelsToRelax.BEST.
+        model_preset (str, optional): Wat model to use. Defaults to "monomer".
+        benchmark (bool, optional): Running benchmark. Defaults to False.
+        use_gpu_relax (bool, optional): True to use GPU to relax the selected structures. Defaults to True.
+        random_seed (int, optional): Seed to perform the task. Defaults to 1.
+    """
     run_multimer_system = "multimer" in model_preset
 
     if model_preset == "monomer_casp14":
@@ -104,32 +117,32 @@ def run_prediction(
     )
 
 
-def run_prediction_test(
-    precomputed_msa: str,
-    data_dir: str,
-    output_dir: str,
-    num_multimer_predictions_per_model: int = 5,
-    models_to_relax: int = 0,
-    model_preset: str = "monomer",
-    benchmark: bool = False,
-    use_gpu_relax: bool = True,
-    random_seed: int = None,
-):
-    """Testing function. It mokes the creation of a pdb file.
+# def run_prediction_test(
+#     precomputed_msa: str,
+#     data_dir: str,
+#     output_dir: str,
+#     num_multimer_predictions_per_model: int = 5,
+#     models_to_relax: int = 0,
+#     model_preset: str = "monomer",
+#     benchmark: bool = False,
+#     use_gpu_relax: bool = True,
+#     random_seed: int = None,
+# ):
+#     """Testing function. It mokes the creation of a pdb file.
 
-    Args:
-        Look at run_prediction for a full description
-    """
-    if random_seed is not None:
-        # Set the random seed here if your prediction logic uses random numbers
-        pass
+#     Args:
+#         Look at run_prediction for a full description
+#     """
+#     if random_seed is not None:
+#         # Set the random seed here if your prediction logic uses random numbers
+#         pass
 
-    o_dir = Path(output_dir) / "msa"
-    o_dir.mkdir(parents=True, exist_ok=True)
+#     o_dir = Path(output_dir) / "msa"
+#     o_dir.mkdir(parents=True, exist_ok=True)
 
-    try:
-        logging.warning(f"Writing: {o_dir / 'ranked_0.pdb'}")
-        with open(o_dir / "ranked_0.pdb", "w") as f_out:
-            f_out.write("ATOM test1")
-    except OSError as e:
-        logging.error(f"Error writing to file: {e}")
+#     try:
+#         logging.warning(f"Writing: {o_dir / 'ranked_0.pdb'}")
+#         with open(o_dir / "ranked_0.pdb", "w") as f_out:
+#             f_out.write("ATOM test1")
+#     except OSError as e:
+#         logging.error(f"Error writing to file: {e}")

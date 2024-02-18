@@ -14,7 +14,7 @@ WORKDIR /app
 ADD af2_serverless.yaml .
 RUN micromamba install --prefix=/app/env/ -f af2_serverless.yaml -y
 
-ADD *.py .
+ADD src/*.py .
 
-ADD start.sh .
+ADD src/start.sh .
 CMD ["/bin/bash", "/app/start.sh"]
