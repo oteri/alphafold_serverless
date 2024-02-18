@@ -38,7 +38,7 @@ def handler(event):
         bucket_name = S3Path(cloud_path=msa_input).bucket
         bucket_name = f"s3://{bucket_name}"
         client = CloudStorageClient(bucket_name=bucket_name)
-        client.download_file(obj_name=msa_input, fn_output=msa_file_path)
+        client.download_file(object_key=msa_input, destination_path=msa_file_path)
     else:
         raise ValueError(
             "You must supply either the content of a MSA (max 20MB) or the S3 path of the file."
