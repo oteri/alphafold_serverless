@@ -36,6 +36,7 @@ def handler(event):
         msa_input = event_input["s3"]
         msa_file_path = job_dir / "msa.fasta"
         bucket_name = S3Path(cloud_path=msa_input).bucket
+        bucket_name = f"s3://{bucket_name}"
         client = CloudStorageClient(bucket_name=bucket_name)
         client.download_file(obj_name=msa_input, fn_output=msa_file_path)
     else:
