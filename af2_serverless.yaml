@@ -4,11 +4,11 @@ channels:
 
 dependencies:
   - python=3.9
-  - boto3=1.34.34
   - python-dotenv=1.0.0
   # Use pip to install additional packages
   - pip
   - pip:
+    - cloudpathlib==0.17.0
     - runpod==1.6.0
   - pip:
       - -e alphafold_MSA
