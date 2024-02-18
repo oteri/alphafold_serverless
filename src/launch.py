@@ -104,7 +104,7 @@ while 1:
             bucket_name = S3Path(cloud_path=args.msa).bucket
             client = CloudStorageClient(bucket_name=bucket_name)
             for obj_name in fn_names:
-                client.download_file(object_key=obj_name, destination_path=obj_name)
+                client.download_file(object_key=obj_name, destination_dir=obj_name)
         else:
             output_file = f"{job_id}.pdb" if args.output is None else args.output
             response_output_dict = json.loads(response_dict["output"])

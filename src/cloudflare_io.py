@@ -39,13 +39,10 @@ class CloudStorageClient:
 
         self.bucket = S3Path(f"{self.bucket_name}", client=self.client)
 
-    def download_file(
-        self, object_key: str, destination_path: Union[str, Path]
-    ) -> None:
+    def download_file(self, object_key: str, destination_dir: Union[str, Path]) -> Path:
         """Downloads a file from a Cloudflare R2 bucket."""
         file_path = self.bucket / object_key
-        file_path.download_to(destination=destination_path)
-        print(f"File {object_key} downloaded successfully to {destination_path}")
+        return file_path.download_to(destination=destination_dir)
 
     def upload_file(
         self, local_file_path: Union[str, Path], object_key: Union[str, None] = None
@@ -76,10 +73,18 @@ if __name__ == "__main__":
         temp_file.close()
 
         # Download the file to the temporary file path
-        storage_client.download_file(
-            object_key=object_key, destination_path=temp_file_path
+        downloaded_path = storage_client.download_file(
+            object_key=object_key, destination_dir=temp_file_path
         )
-        print(f"File downloaded to temporary file: {temp_file_path}")
+        print(f"File downloaded to temporary file: {downloaded_path}")
+
+        tmpdirname = tempfile.TemporaryDirectory()
+        print(f"Created temporary directory: {tmpdirname.name}")
+        # Download the file to the temporary directory
+        downloaded_path = storage_client.download_file(
+            object_key=object_key, destination_dir=tmpdirname.name
+        )
+        print(f"File downloaded to temporary file: {downloaded_path}")
 
     except Exception as e:
         print(f"Error: {e}")

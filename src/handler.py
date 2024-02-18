@@ -34,11 +34,12 @@ def handler(event):
         msa_file_path = io_utils.create_input_file(content=content, job_dir=job_dir)
     elif "s3" in event_input:
         msa_input = event_input["s3"]
-        msa_file_path = job_dir / "msa.fasta"
         bucket_name = S3Path(cloud_path=msa_input).bucket
         bucket_name = f"s3://{bucket_name}"
         client = CloudStorageClient(bucket_name=bucket_name)
-        client.download_file(object_key=msa_input, destination_path=msa_file_path)
+        msa_file_path = client.download_file(
+            object_key=msa_input, destination_dir=job_dir
+        )
     else:
         raise ValueError(
             "You must supply either the content of a MSA (max 20MB) or the S3 path of the file."
