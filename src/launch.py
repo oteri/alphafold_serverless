@@ -94,7 +94,7 @@ while 1:
     # "IN_QUEUE", "IN_PROGRESS", "FAILED", "COMPLETED",
     if status == "FAILED":
         logger.error("Job failed")
-        logger.error("Error:", response.text)
+        logger.error(f"FAILED: {response.text}")
         break
     if status == "COMPLETED":
         logger.info("Job successfully completed")
