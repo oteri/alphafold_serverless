@@ -1,25 +1,87 @@
+[build-system]
+# Minimum requirements for the build system to execute.
+requires = ["setuptools", "wheel"] # PEP 508 specifications.
+
 [project]
-requires-python = "==3.9"
+requires-python = "==3.9.*"
+version = "1.alpha"
+name = "alphafold_severless"
+
+dependencies = ["python-dotenv==1.0.0", "cloudpathlib==0.17.0", "runpod==1.6.0"]
+
+# Development dependencies. Install using:
+# pip install .["development"]
+[project.optional-dependencies]
+development = [
+  "isort==5.12.0",
+  "pyupgrade==3.15.0",
+  "pytest==7.4.2",
+  "pytest-cov==4.1.0",
+  "black==23.9",
+  "mypy==1.7.0",
+  "ruff==0.1.7",
+  "pre-commit==3.5.0",
+]
+
+[tool.pytest.ini_options]
+addopts = "tests --cov --cov-report html --cov-report term-missing --cov-fail-under 95"
+
+[tool.coverage.run]
+source = ["alphafold_severless"]
 
 [tool.isort]
 profile = "black"
 add_imports = "from __future__ import annotations"
 
+
+[tool.ruff.lint.per-file-ignores]
+"conftest.py" = ["INP001"] # unused imports
+
+[tool.ruff.lint.pylint]
+max-args = 8
+
 [tool.ruff.lint]
 extend-select = [
-  "UP",  # pyupgrade
-  "D",   # pydocstyle
+  "UP",   # pyupgrade
+  "D",    # pydocstyle
   "F821",
+]
+fixable = [
+  "COM812", # Trailing comma missing
+  "E",      # pycodestyle
+  "F",      # pyflakes
+  "W",      # pycodestyle
+  "B",      # bugbear
+  "I",      # isort
+  "RUF",    # ruff
+]
+select = ["ALL"]
+ignore = [
+  "ANN101",  # Missing type annotation for `self` in method
+  "ANN204",  # Missing return type annotation for special method `__init__`
+  "D",       # Skip problem with documentation
+  "EM101",   # Exception must not use a string literal, assign to variable first"
+  "EM102",   # Exception must not use an f-string literal, assign to variable first"
+  "PTH",     # User Pathlib stuff over os.*. Should migrate to Pathlib at some point.
+  "PLR2004", # Magic value used in comparison, consider replacing 1.0 with a constant variable
+  "RET504",  # Unnecessary variable assignment before `return` statement"
+  "S101",    # Use of `assert` detected"
+  "SIM108",  # Use ternary operator ...". Ternary is harmful for readability in some cases.
+  "TCH001",  # Skip complaining when something is imported only for type checking
+  "TCH002",  # Move third-party import into a type-checking block
+  "TCH003",  # Move standard library import `pathlib.Path` into a type-checking block
+  "TD",      # Missing author in TODO; try: `# TODO(<author_name>): ...` or `# TODO @<author_name>: ...`
+  "TRY003",  # Avoid specifying long messages outside the exception class"
 ]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
-
 
 [tool.mypy]
 python_version = "3.9"
 files = "src/**/*.py"
 strict_optional = true
 warn_redundant_casts = true
-warn_unused_ignores = false
+warn_unused_ignores = true
 warn_unused_configs = true
+ignore_missing_imports = false
