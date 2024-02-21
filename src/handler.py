@@ -1,15 +1,19 @@
 """Main module invoked by runpod platform."""
+
+from __future__ import annotations
+
 import json
 import os
 import tempfile
 from pathlib import Path
 
-from cloudpathlib import S3Path  # type: ignore
-from absl import logging  # type: ignore
 import runpod  # type: ignore
+from absl import logging  # type: ignore # [import-error]
 from cloudflare_io import CloudStorageClient
-from prediction import run_prediction
-import io_utils
+from cloudpathlib import S3Path  # type: ignore
+
+from src import io_utils
+from src.prediction import run_prediction
 
 # WORKDIR and PARAM_DIR are usually set by runpod at running time
 WORKDIR = os.environ.get("WORKDIR", "/data/")
@@ -21,7 +25,7 @@ logging.debug(f"WORKDIR:{WORKDIR}")
 logging.debug(f"PARAM_DIR:{PARAM_DIR}")
 
 
-def handler(event):
+def handler(event) -> str:
     """Function invoked by runpod."""
     job_id = event["id"]
     job_dir = Path(tempfile.mkdtemp(prefix=job_id, dir=Path(WORKDIR)))
@@ -38,17 +42,20 @@ def handler(event):
         bucket_name = f"s3://{bucket_name}"
         client = CloudStorageClient(bucket_name=bucket_name)
         msa_file_path = client.download_file(
-            object_key=msa_input, destination_dir=job_dir
+            object_key=msa_input,
+            destination_name=job_dir,
         )
     else:
         raise ValueError(
-            "You must supply either the content of a MSA (max 20MB) or the S3 path of the file."
+            "You must supply either the content of a MSA (max 20MB) or the S3 path of the file.",
         )
 
     logging.debug(f"msa_file_path:{msa_file_path}")
 
     run_prediction(
-        precomputed_msa=msa_file_path, output_dir=job_dir, data_dir=PARAM_DIR
+        precomputed_msa=msa_file_path,
+        output_dir=job_dir,
+        data_dir=PARAM_DIR,
     )
 
     if "s3" in event_input:
@@ -59,12 +66,11 @@ def handler(event):
             client.upload_file(local_file_path=str(file), object_key=fn)
             fns.append(fn)
         return json.dumps({"structure": ",".join(fns)})
-    else:
-        output_file_path = Path(job_dir) / "msa" / "ranked_0.pdb"
-        output_content = io_utils.read_output_content(
-            output_file_path=str(output_file_path)
-        )
-        return json.dumps({"structure": output_content})
+    output_file_path = Path(job_dir) / "msa" / "ranked_0.pdb"
+    output_content = io_utils.read_output_content(
+        output_file_path=str(output_file_path),
+    )
+    return json.dumps({"structure": output_content})
 
 
 runpod.serverless.start({"handler": handler})

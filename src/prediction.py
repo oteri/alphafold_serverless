@@ -1,22 +1,27 @@
 """Performs the prediction task."""
+
+from __future__ import annotations
+
 import os
 import random
 import sys
 from typing import Any
-import numpy as np  # type: ignore
 
-import jax.numpy as jnp  # type: ignore
-from absl import logging  # type: ignore
-from alphafold.data import pipeline, pipeline_multimer  # type: ignore
-from alphafold.model import config, data, model  # type: ignore
-from alphafold.predict_structure import ModelsToRelax, predict_structure  # type: ignore
-from alphafold.relax import relax  # type: ignore
-
+import jax.numpy as jnp
+import numpy as np
+from absl import logging  # pylint: disable=import-error
+from alphafold.data import pipeline, pipeline_multimer  # pylint: disable=import-error
+from alphafold.model import config, data, model  # pylint: disable=import-error
+from alphafold.predict_structure import (  # pylint: disable=import-error
+    ModelsToRelax,
+    predict_structure,
+)
+from alphafold.relax import relax  # pylint: disable=import-error,no-name-in-module
 
 RELAX_MAX_ITERATIONS = 0
 RELAX_ENERGY_TOLERANCE = 2.39
 RELAX_STIFFNESS = 10.0
-RELAX_EXCLUDE_RESIDUES = []  # type: ignore
+RELAX_EXCLUDE_RESIDUES = []
 RELAX_MAX_OUTER_ITERATIONS = 3
 
 
@@ -30,17 +35,17 @@ def _jnp_to_np(output: dict[str, Any]) -> dict[str, Any]:
     return output
 
 
-def run_prediction(
+def run_prediction(  # noqa: PLR0913
     precomputed_msa: str,
     data_dir: str,
     output_dir: str,
     num_multimer_predictions_per_model: int = 5,
     models_to_relax: int = ModelsToRelax.BEST,
     model_preset: str = "monomer",
-    benchmark: bool = False,
-    use_gpu_relax: bool = True,
+    benchmark: bool = False,  # noqa: FBT001,FBT002
+    use_gpu_relax: bool = True,  # noqa: FBT001,FBT002
     random_seed: int = 1,
-):
+) -> None:
     """Runs the prediction.
 
     Args:
@@ -79,7 +84,8 @@ def run_prediction(
         else:
             model_config.data.eval.num_ensemble = num_ensemble
         model_params = data.get_model_haiku_params(
-            model_name=model_name, data_dir=data_dir
+            model_name=model_name,
+            data_dir=data_dir,
         )
         model_runner = model.RunModel(model_config, model_params)
         for i in range(num_predictions_per_model):
@@ -97,7 +103,7 @@ def run_prediction(
     )
 
     if random_seed is None:
-        random_seed = random.randrange(sys.maxsize // len(model_runners))
+        random_seed = random.randrange(sys.maxsize // len(model_runners))  # noqa: S311
     logging.info("Using random seed %d for the data pipeline", random_seed)
 
     basename = os.path.basename(precomputed_msa)  # Get the filename with extension
@@ -115,34 +121,3 @@ def run_prediction(
         random_seed=random_seed,
         models_to_relax=models_to_relax,
     )
-
-
-# def run_prediction_test(
-#     precomputed_msa: str,
-#     data_dir: str,
-#     output_dir: str,
-#     num_multimer_predictions_per_model: int = 5,
-#     models_to_relax: int = 0,
-#     model_preset: str = "monomer",
-#     benchmark: bool = False,
-#     use_gpu_relax: bool = True,
-#     random_seed: int = None,
-# ):
-#     """Testing function. It mokes the creation of a pdb file.
-
-#     Args:
-#         Look at run_prediction for a full description
-#     """
-#     if random_seed is not None:
-#         # Set the random seed here if your prediction logic uses random numbers
-#         pass
-
-#     o_dir = Path(output_dir) / "msa"
-#     o_dir.mkdir(parents=True, exist_ok=True)
-
-#     try:
-#         logging.warning(f"Writing: {o_dir / 'ranked_0.pdb'}")
-#         with open(o_dir / "ranked_0.pdb", "w") as f_out:
-#             f_out.write("ATOM test1")
-#     except OSError as e:
-#         logging.error(f"Error writing to file: {e}")

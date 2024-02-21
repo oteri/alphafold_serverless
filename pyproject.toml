@@ -78,6 +78,8 @@ ignore = [
 convention = "google"
 
 [tool.mypy]
+#After installing the packages, ru:
+#mypy --install-types
 python_version = "3.9"
 files = "src/**/*.py"
 strict_optional = true

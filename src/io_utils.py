@@ -1,4 +1,7 @@
 """Handles high level I/O operations."""
+
+from __future__ import annotations
+
 import os
 from pathlib import Path
 
